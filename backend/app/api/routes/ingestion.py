@@ -94,15 +94,13 @@ async def ingest_document(
     # Read file content into memory
     file_content = await file.read()
     
-    # Create document record with content stored in DB temporarily
-    # For production, use S3/Cloudinary instead
+    # Create document record
     document = Document(
         title=title or file.filename,
         content_type=ContentType.DOCUMENT,
         file_path=file.filename,  # Store filename only
         file_size=file_size,
-        status=ProcessingStatus.PENDING,
-        extracted_text=file_content.decode('utf-8') if file.filename.endswith(('.md', '.markdown')) else None
+        status=ProcessingStatus.PENDING
     )
     db.add(document)
     db.commit()

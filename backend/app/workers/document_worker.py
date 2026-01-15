@@ -56,10 +56,8 @@ def process_document(self, document_id: int, file_content_hex: str = None):
             else:
                 raise ValueError("No file content provided for PDF")
         elif file_ext in [".md", ".markdown"]:
-            # For markdown, we may have already stored it in extracted_text
-            if document.extracted_text:
-                text = document.extracted_text
-            elif file_content_hex:
+            # Decode markdown content from hex
+            if file_content_hex:
                 file_bytes = bytes.fromhex(file_content_hex)
                 text = file_bytes.decode('utf-8')
             else:
