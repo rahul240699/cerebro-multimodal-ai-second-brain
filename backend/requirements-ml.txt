@@ -1,0 +1,12 @@
+# Optional ML Dependencies for Audio Transcription
+# Install only if you need Whisper audio transcription:
+# pip install -r requirements-ml.txt
+
+# Whisper and dependencies
+openai-whisper
+torch
+torchaudio
+torchvision
+
+# Alternative: Use OpenAI Whisper API instead of local transcription
+# No additional packages needed - just set OPENAI_API_KEY
