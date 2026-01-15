@@ -5,7 +5,7 @@ Celery Configuration and Task Queue Setup
 from celery import Celery
 from app.core.config import settings
 
-# Initialize Celery app
+# Initialize Celery app with SSL support for Upstash Redis
 celery_app = Celery(
     "cerebro",
     broker=settings.CELERY_BROKER_URL,
@@ -18,7 +18,7 @@ celery_app = Celery(
     ]
 )
 
-# Celery configuration
+# Celery configuration with SSL support for rediss://
 celery_app.conf.update(
     task_serializer="json",
     accept_content=["json"],
@@ -28,4 +28,10 @@ celery_app.conf.update(
     task_track_started=True,
     task_time_limit=3600,  # 1 hour max per task
     task_soft_time_limit=3300,  # Soft limit at 55 minutes
+    broker_use_ssl={
+        'ssl_cert_reqs': None
+    },
+    redis_backend_use_ssl={
+        'ssl_cert_reqs': None
+    }
 )
