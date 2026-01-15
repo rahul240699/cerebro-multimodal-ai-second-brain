@@ -11,7 +11,11 @@ RUN npm ci
 # Copy application code
 COPY . .
 
-# Build for production
+# Accept build argument for API URL
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
+# Build for production with env var
 RUN npm run build
 
 # Expose port (Railway uses $PORT)
