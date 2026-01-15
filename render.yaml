@@ -64,5 +64,5 @@ services:
 databases:
   - name: cerebro-db
     databaseName: cerebro
-    plan: basic-4gb
+    plan: free
     ipAllowList: []
