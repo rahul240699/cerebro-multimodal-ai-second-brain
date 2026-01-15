@@ -30,6 +30,26 @@ app.include_router(ingestion.router, prefix="/api/ingest", tags=["ingestion"])
 app.include_router(query.router, prefix="/api/query", tags=["query"])
 
 
+@app.get("/health")
+async def root_health_check():
+    """Root-level health check for Railway/Render"""
+    return {
+        "status": "healthy",
+        "service": "Cerebro API",
+        "version": "0.1.0"
+    }
+
+
+@app.get("/")
+async def root():
+    """Root endpoint"""
+    return {
+        "message": "Cerebro API is running",
+        "docs": "/docs",
+        "health": "/health"
+    }
+
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on application startup"""
