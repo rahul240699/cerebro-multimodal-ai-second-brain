@@ -54,7 +54,7 @@ services:
   - type: web
     name: cerebro-frontend
     runtime: docker
-    dockerfilePath: ./frontend/Dockerfile.production
+    dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
     plan: free
     envVars:
