@@ -56,7 +56,7 @@ async def startup_event():
     print("🧠 Cerebro API is starting up...")
     # Initialize database tables
     try:
-        from app.db.database import init_db
+        from app.core.database import init_db
         init_db()
         print("✅ Database tables initialized")
     except Exception as e:
