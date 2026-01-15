@@ -56,6 +56,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    restart: unless-stopped
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
   # Celery Worker
@@ -79,8 +80,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    restart: unless-stopped
     command: celery -A app.workers.celery_app worker --loglevel=info --concurrency=4
-
   # Next.js Frontend
   frontend:
     build:
@@ -97,6 +98,7 @@ services:
       - /app/.next
     depends_on:
       - backend
+    restart: unless-stopped
     command: npm run dev
 
 volumes:
