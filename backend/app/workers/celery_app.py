@@ -19,6 +19,8 @@ celery_app = Celery(
 )
 
 # Celery configuration with SSL support for rediss://
+import ssl
+
 celery_app.conf.update(
     task_serializer="json",
     accept_content=["json"],
@@ -28,10 +30,6 @@ celery_app.conf.update(
     task_track_started=True,
     task_time_limit=3600,  # 1 hour max per task
     task_soft_time_limit=3300,  # Soft limit at 55 minutes
-    broker_use_ssl={
-        'ssl_cert_reqs': None
-    },
-    redis_backend_use_ssl={
-        'ssl_cert_reqs': None
-    }
+    broker_use_ssl={'ssl_cert_reqs': ssl.CERT_NONE},
+    redis_backend_use_ssl={'ssl_cert_reqs': ssl.CERT_NONE}
 )
