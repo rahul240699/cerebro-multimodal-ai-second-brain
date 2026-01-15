@@ -32,7 +32,7 @@ services:
   - type: web
     name: cerebro-frontend
     runtime: docker
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
     plan: free
     envVars:
