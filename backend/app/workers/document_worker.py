@@ -14,18 +14,19 @@ from app.core.config import settings
 
 
 @celery_app.task(bind=True, name="process_document")
-def process_document(self, document_id: int):
+def process_document(self, document_id: int, file_content_hex: str = None):
     """
     Asynchronous document processing task
     
     Steps:
-        1. Extract text from PDF or Markdown
+        1. Extract text from PDF or Markdown (from content, not file)
         2. Chunk the text
         3. Generate embeddings
         4. Store chunks in database
     
     Args:
         document_id: ID of the document to process
+        file_content_hex: Hex-encoded file content (for containerized deployments)
     """
     
     db = SessionLocal()
@@ -44,14 +45,27 @@ def process_document(self, document_id: int):
         print(f"📄 Processing document: {document.title}")
         
         # Extract text based on file type
-        file_path = Path(document.file_path)
+        filename = document.file_path  # Now contains filename only
+        file_ext = Path(filename).suffix.lower()
         
-        if file_path.suffix.lower() == ".pdf":
-            text = _extract_pdf_text(file_path)
-        elif file_path.suffix.lower() in [".md", ".markdown"]:
-            text = file_path.read_text(encoding="utf-8")
+        if file_ext == ".pdf":
+            # Decode hex content back to bytes
+            if file_content_hex:
+                file_bytes = bytes.fromhex(file_content_hex)
+                text = _extract_pdf_from_bytes(file_bytes)
+            else:
+                raise ValueError("No file content provided for PDF")
+        elif file_ext in [".md", ".markdown"]:
+            # For markdown, we may have already stored it in extracted_text
+            if document.extracted_text:
+                text = document.extracted_text
+            elif file_content_hex:
+                file_bytes = bytes.fromhex(file_content_hex)
+                text = file_bytes.decode('utf-8')
+            else:
+                raise ValueError("No file content provided for Markdown")
         else:
-            raise ValueError(f"Unsupported file type: {file_path.suffix}")
+            raise ValueError(f"Unsupported file type: {file_ext}")
         
         print(f"✅ Text extraction complete: {len(text)} characters")
         
@@ -109,5 +123,27 @@ def _extract_pdf_text(file_path: Path) -> str:
             page_text = page.extract_text()
             if page_text:
                 text += page_text + "\n"
+    
+    return text.strip()
+
+
+def _extract_pdf_from_bytes(file_bytes: bytes) -> str:
+    """
+    Extract text from PDF bytes
+    
+    Args:
+        file_bytes: PDF file content as bytes
+        
+    Returns:
+        Extracted text content
+    """
+    from io import BytesIO
+    reader = pypdf.PdfReader(BytesIO(file_bytes))
+    text = ""
+    
+    for page in reader.pages:
+        page_text = page.extract_text()
+        if page_text:
+            text += page_text + "\n"
     
     return text.strip()

@@ -47,16 +47,14 @@ async def ingest_audio(
     if file_size > settings.MAX_AUDIO_SIZE_MB * 1024 * 1024:
         raise HTTPException(400, f"Audio file too large. Max size: {settings.MAX_AUDIO_SIZE_MB}MB")
     
-    # Save file
-    file_path = UPLOAD_DIR / f"audio_{file.filename}"
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    # Read audio file content
+    file_content = await file.read()
     
     # Create document record
     document = Document(
         title=title or file.filename,
         content_type=ContentType.AUDIO,
-        file_path=str(file_path),
+        file_path=file.filename,  # Store filename only
         file_size=file_size,
         status=ProcessingStatus.PENDING
     )
@@ -64,8 +62,8 @@ async def ingest_audio(
     db.commit()
     db.refresh(document)
     
-    # Start async processing
-    process_audio.delay(document.document_id)
+    # Start async processing, passing file content
+    process_audio.delay(document.document_id, file_content.hex())
     
     return document
 
@@ -93,25 +91,25 @@ async def ingest_document(
     if file_size > settings.MAX_DOCUMENT_SIZE_MB * 1024 * 1024:
         raise HTTPException(400, f"Document too large. Max size: {settings.MAX_DOCUMENT_SIZE_MB}MB")
     
-    # Save file
-    file_path = UPLOAD_DIR / f"doc_{file.filename}"
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    # Read file content into memory
+    file_content = await file.read()
     
-    # Create document record
+    # Create document record with content stored in DB temporarily
+    # For production, use S3/Cloudinary instead
     document = Document(
         title=title or file.filename,
         content_type=ContentType.DOCUMENT,
-        file_path=str(file_path),
+        file_path=file.filename,  # Store filename only
         file_size=file_size,
-        status=ProcessingStatus.PENDING
+        status=ProcessingStatus.PENDING,
+        extracted_text=file_content.decode('utf-8') if file.filename.endswith(('.md', '.markdown')) else None
     )
     db.add(document)
     db.commit()
     db.refresh(document)
     
-    # Start async processing
-    process_document.delay(document.document_id)
+    # Start async processing, passing file content via task args
+    process_document.delay(document.document_id, file_content.hex())
     
     return document
 

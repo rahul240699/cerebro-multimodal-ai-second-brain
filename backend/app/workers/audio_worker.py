@@ -15,20 +15,20 @@ from app.core.config import settings
 
 
 @celery_app.task(bind=True, name="process_audio")
-def process_audio(self, document_id: int):
+def process_audio(self, document_id: int, file_content_hex: str = None):
     """
     Asynchronous audio transcription task
     
     Steps:
-        1. Load audio file
+        1. Load audio file from memory
         2. Transcribe using OpenAI Whisper API
         3. Chunk the transcription
         4. Generate embeddings
         5. Store chunks in database
-        6. Delete audio file for privacy (if configured)
     
     Args:
         document_id: ID of the document to process
+        file_content_hex: Hex-encoded audio file content
     """
     
     db = SessionLocal()
@@ -47,13 +47,24 @@ def process_audio(self, document_id: int):
         
         print(f"🎤 Transcribing audio: {document.title}")
         
+        # Decode file content and create temporary file for Whisper API
+        if not file_content_hex:
+            raise ValueError("No audio file content provided")
+        
+        file_bytes = bytes.fromhex(file_content_hex)
+        filename = document.file_path  # Contains original filename
+        
+        # Create temporary file for Whisper API (it requires a file object)
+        from io import BytesIO
+        audio_file = BytesIO(file_bytes)
+        audio_file.name = filename  # Set name for proper file extension detection
+        
         # Transcribe using OpenAI Whisper API
-        with open(document.file_path, "rb") as audio_file:
-            transcription = openai_client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file,
-                response_format="text"
-            )
+        transcription = openai_client.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_file,
+            response_format="text"
+        )
         
         transcription_text = transcription if isinstance(transcription, str) else transcription.text
         
