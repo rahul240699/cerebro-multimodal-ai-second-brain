@@ -307,22 +307,6 @@ For production:
 6. Use production-grade Redis
 7. Set up monitoring (e.g., Sentry)
 
-## 📝 License
 
-MIT License - feel free to use for personal or commercial projects.
 
-## 🤝 Contributing
 
-Contributions welcome! Please open an issue or PR.
-
-## 🙏 Acknowledgments
-
-Built with:
-- OpenAI GPT-4 and Whisper
-- pgvector by Andrew Kane
-- FastAPI by Sebastián Ramírez
-- Next.js by Vercel
-
----
-
-**Built with 🧠 by the Cerebro Team**
