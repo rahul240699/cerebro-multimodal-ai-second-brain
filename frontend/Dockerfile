@@ -2,14 +2,14 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
+# Copy package files from frontend directory
+COPY frontend/package.json frontend/package-lock.json* ./
 
 # Install dependencies
 RUN npm ci
 
-# Copy application code
-COPY . .
+# Copy application code from frontend directory
+COPY frontend/ .
 
 # Build for production
 RUN npm run build
