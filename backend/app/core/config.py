@@ -58,7 +58,7 @@ class Settings(BaseSettings):
     RERANK_TOP_N: int = 10
     
     # Storage
-    UPLOAD_DIR: str = "uploads"
+    UPLOAD_DIR: str = "/tmp/uploads"  # Use /tmp for ephemeral storage on Render
     KEEP_AUDIO_FILES: bool = False  # Privacy: delete after transcription
     
     @property
