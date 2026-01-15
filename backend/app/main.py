@@ -16,13 +16,15 @@ app = FastAPI(
 )
 
 # Configure CORS for Next.js frontend
-cors_origins = settings.allowed_origins_list if settings.ALLOWED_ORIGINS != "*" else ["*"]
-cors_credentials = settings.ALLOWED_ORIGINS != "*"  # Can't use credentials with wildcard
+cors_origins = [
+    "https://cerebro-frontend.onrender.com",
+    "http://localhost:3000",  # For local development
+]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
-    allow_credentials=cors_credentials,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
