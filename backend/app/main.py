@@ -54,7 +54,14 @@ async def root():
 async def startup_event():
     """Initialize services on application startup"""
     print("🧠 Cerebro API is starting up...")
-    # Database connection will be initialized on first request
+    # Initialize database tables
+    try:
+        from app.db.database import init_db
+        init_db()
+        print("✅ Database tables initialized")
+    except Exception as e:
+        print(f"⚠️  Database initialization error: {e}")
+        # Don't crash - tables might already exist
 
 
 @app.on_event("shutdown")
