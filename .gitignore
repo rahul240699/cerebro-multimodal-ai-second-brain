@@ -16,3 +16,4 @@ venv/
 aws-deployment-guide.md
 EC2-SETUP.md
 *.pem
+RAILWAY-SETUP.md

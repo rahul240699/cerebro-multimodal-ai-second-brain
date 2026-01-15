@@ -11,8 +11,11 @@ RUN npm ci
 # Copy application code
 COPY . .
 
-# Expose port
+# Build for production
+RUN npm run build
+
+# Expose port (Railway uses $PORT)
 EXPOSE 3000
 
-# Run development server
-CMD ["npm", "run", "dev"]
+# Run production server
+CMD ["npm", "start"]
