@@ -35,7 +35,7 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     dockerCommand: celery -A app.workers.celery_app worker --loglevel=info --concurrency=2
-    plan: free
+    plan: starter
     envVars:
       - key: DATABASE_URL
         fromDatabase:
