@@ -50,6 +50,7 @@ class Settings(BaseSettings):
     
     # Document Processing
     MAX_DOCUMENT_SIZE_MB: int = 20
+    MAX_IMAGE_SIZE_MB: int = 10
     CHUNK_SIZE: int = 512
     CHUNK_OVERLAP: int = 50
     

@@ -2,6 +2,11 @@
 
 A powerful multimodal AI system that acts as your personal intelligence layer, capable of ingesting, understanding, and reasoning about documents, audio, web content, and images.
 
+## 📹 Demo & Documentation
+
+- **[Video Demo](./docs/final.mp4)** - Watch Cerebro in action
+- **[System Design Document](./docs/System%20Design%20Document.pdf)** - Detailed architecture and design decisions
+
 ## 🧠 Features
 
 - **Multimodal Ingestion**: Process audio (MP3, M4A), documents (PDF, Markdown), web content, and images

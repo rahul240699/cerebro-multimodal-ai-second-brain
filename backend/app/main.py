@@ -19,6 +19,7 @@ app = FastAPI(
 cors_origins = [
     "https://cerebro-frontend.onrender.com",
     "http://localhost:3000",  # For local development
+    "*"  # Allow all origins (consider restricting in production)
 ]
 
 app.add_middleware(

@@ -154,24 +154,31 @@ async def ingest_image(
     if not file.filename.endswith((".jpg", ".jpeg", ".png", ".webp")):
         raise HTTPException(400, "Only image files (.jpg, .png, .webp) are supported")
     
-    # Save file
-    file_path = UPLOAD_DIR / f"img_{file.filename}"
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    # Validate file size
+    file.file.seek(0, 2)
+    file_size = file.file.tell()
+    file.file.seek(0)
+    
+    if file_size > settings.MAX_IMAGE_SIZE_MB * 1024 * 1024:
+        raise HTTPException(400, f"Image too large. Max size: {settings.MAX_IMAGE_SIZE_MB}MB")
+    
+    # Read file content into memory
+    file_content = await file.read()
     
     # Create document record
     document = Document(
         title=title or file.filename,
         content_type=ContentType.IMAGE,
-        file_path=str(file_path),
+        file_path=file.filename,  # Store filename only
+        file_size=file_size,
         status=ProcessingStatus.PENDING
     )
     db.add(document)
     db.commit()
     db.refresh(document)
     
-    # Start async processing
-    process_image.delay(document.document_id)
+    # Start async processing, passing file content via task args
+    process_image.delay(document.document_id, file_content.hex())
     
     return document
 

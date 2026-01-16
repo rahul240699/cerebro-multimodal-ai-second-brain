@@ -16,12 +16,12 @@ from app.core.config import settings
 
 
 @celery_app.task(bind=True, name="process_image")
-def process_image(self, document_id: int):
+def process_image(self, document_id: int, file_content_hex: str):
     """
     Asynchronous image processing task
     
     Steps:
-        1. Load image file
+        1. Decode image from hex content
         2. Generate caption using Vision-LLM (GPT-4 Vision)
         3. Create searchable text chunk from caption
         4. Generate embedding
@@ -29,6 +29,7 @@ def process_image(self, document_id: int):
     
     Args:
         document_id: ID of the document to process
+        file_content_hex: Image file content as hex string
     """
     
     db = SessionLocal()
@@ -46,13 +47,12 @@ def process_image(self, document_id: int):
         
         print(f"🖼️ Processing image: {document.title}")
         
-        # Load and encode image
-        image_path = Path(document.file_path)
-        with open(image_path, "rb") as image_file:
-            image_data = base64.b64encode(image_file.read()).decode("utf-8")
+        # Decode image from hex
+        image_bytes = bytes.fromhex(file_content_hex)
+        image_data = base64.b64encode(image_bytes).decode("utf-8")
         
-        # Determine image format
-        image_format = image_path.suffix.lower().replace(".", "")
+        # Determine image format from filename
+        image_format = Path(document.file_path).suffix.lower().replace(".", "")
         if image_format == "jpg":
             image_format = "jpeg"
         

@@ -17,3 +17,5 @@ aws-deployment-guide.md
 EC2-SETUP.md
 *.pem
 RAILWAY-SETUP.md
+fix*
+cloudfront-urls.txt
