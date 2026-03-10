@@ -4,7 +4,7 @@ A powerful multimodal AI system that acts as your personal intelligence layer, c
 
 ## 📹 Demo & Documentation
 
-- **[Video Demo](./docs/final.mp4)** - Watch Cerebro in action
+- **[Video Demo](https://youtu.be/XK_D3NkX_z0)** - Watch Cerebro in action
 - **[System Design Document](./docs/System%20Design%20Document.pdf)** - Detailed architecture and design decisions
 
 ## 🧠 Features
